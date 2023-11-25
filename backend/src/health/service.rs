@@ -1,20 +1,23 @@
-use shaku::Provider;
+use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
+use std::cell::RefCell;
+use std::error::Error;
 
-pub trait HealthService {
-	fn get_health(&self) -> String;
+use crate::health::repository::Repository;
+
+// Traits
+
+pub trait Service: Send + Sync {
+    fn get_double(&self) -> usize;
 }
-
-
 #[derive(Provider)]
-#[shaku(interface = HealthService)]
-struct HealthServiceImpl {
+#[shaku(interface = Service)]
+pub struct ServiceImpl {
     #[shaku(provide)]
-    repo: Box<dyn HealthRepository>
+    repo: Box<dyn Repository>
 }
 
-
-impl HealthService for HealthServiceImpl {
-	fn get_health(&self) -> String {
-		"Hello, world!".to_owned()
-	}
+impl Service for ServiceImpl {
+    fn get_double(&self) -> usize {
+        self.repo.get() * 2
+    }
 }

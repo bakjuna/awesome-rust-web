@@ -1,5 +1,9 @@
 use axum::{Router, routing::get};
 
-pub fn router_health() -> Router {
-    Router::new().route("/", get(super::handler::handler_health))
+use crate::AppState;
+use crate::health::handler::handler_health;
+
+pub fn router_health(state: AppState) -> Router {
+    Router::new().route("/", get(handler_health))
+    .with_state(state)
 }

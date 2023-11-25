@@ -1,18 +1,22 @@
-use shaku::Provider;
+use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
+use std::cell::RefCell;
+use std::error::Error;
+use crate::DBConnection;
 
-pub trait HealthRepository {
-	fn get(&self) -> usize;
+// Traits
+
+pub trait Repository: Send + Sync {
+    fn get(&self) -> usize;
 }
-
 #[derive(Provider)]
-#[shaku(interface = HealthRepository)]
-pub struct HealthRepositoryImpl {
+#[shaku(interface = Repository)]
+pub struct RepositoryImpl {
     #[shaku(provide)]
     db: Box<DBConnection>
 }
 
-impl HealthRepository for HealthRepositoryImpl {
-	fn get(&self) -> usize {
-			*(*self.db).0.borrow()
-	}
+impl Repository for RepositoryImpl {
+    fn get(&self) -> usize {
+        (*self.db).0
+    }
 }
