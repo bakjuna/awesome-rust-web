@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  database:
+    container_name: database
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "17342:5432"
+  server:
+    container_name: server
+    image: lottery-number-maker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - 'database'
