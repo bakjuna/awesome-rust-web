@@ -14,7 +14,7 @@ pub trait ConnectionPool: Interface {
 }
 
 // Define the `DBConnection` struct
-pub struct DBConnection(pub Future<Output=dyn Pool<Postgres>>);
+pub struct DBConnection(pub Box<dyn Future<Output= Pool<Postgres>>>);
 
 // Define the `DatabaseConnectionPool` struct as a Shaku component
 #[derive(Component)]

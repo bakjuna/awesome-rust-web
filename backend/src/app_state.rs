@@ -3,13 +3,13 @@ use axum::extract::FromRef;
 
 use shaku::module;
 
-use crate::{ health::{repository::RepositoryImpl, service::ServiceImpl}, env::EnvImpl, PgPoolImpl, DBConnection};
+use crate::{ health::{repository::RepositoryImpl, service::ServiceImpl}, env::EnvImpl, DBConnection};
 
 
 module! {
 	pub ExampleModule {
-			components = [DBConnection, EnvImpl],
-			providers = [ RepositoryImpl, ServiceImpl]
+			components = [DatabaseConnectionPool, EnvImpl],
+			providers = [ RepositoryImpl, DBConnection, ServiceImpl]
 	}
 }
 
