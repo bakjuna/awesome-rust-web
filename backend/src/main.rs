@@ -13,7 +13,8 @@ pub use self::{
 };
 use axum::{middleware, routing::get, Router};
 use errors::BootResult;
-use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
+use shaku::{module, Component, HasProvider, Interface, Module, Provider};
+use sqlx::postgres::PgPoolOptions;
 mod app_state;
 mod database;
 mod errors;
@@ -33,7 +34,28 @@ pub fn test_router(state: AppState) -> Router {
 #[tokio::main]
 async fn main() -> BootResult {
     println!("Starting Server...");
-    let module = Arc::new(ExampleModule::builder().build());
+    let mut builder = ExampleModule::builder();
+    let database_url = format!(
+        "{}",
+        "postgres://yacho:password@127.0.0.1:17342/public?schema=public"
+    );
+    println!("Connecting Database..., {:?}", database_url);
+    let pool = match PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&database_url)
+        .await
+    {
+        Ok(pool) => {
+            println!("Database Connected");
+            pool
+        }
+        Err(err) => {
+            println!("Database not Connected: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+    // builder.with_component_parameters(pool::Pool<Postgres> as Pool<Postgres>);
+    let module = Arc::new(builder.build());
     // let module: Arc<AppModule> = Arc::new(AppModule::builder().build());
     let state = AppState { module };
 

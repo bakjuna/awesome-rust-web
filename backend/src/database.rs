@@ -1,39 +1,49 @@
-use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
-use std::cell::RefCell;
+use axum::extract::FromRef;
+use shaku::{module, Component, HasProvider, Interface, Module, Provider, HasComponent};
+use sqlx::postgres::PgPoolOptions;
+use sqlx::{Pool, Postgres};
 use std::error::Error;
+use std::future::Future;
+use std::sync::Arc;
 
-// Traits
+use crate::env::Env;
 
+// Define the `ConnectionPool` trait
 pub trait ConnectionPool: Interface {
-    fn get(&self) -> DBConnection;
+    // fn initialize(&self) -> Pool<Postgres>;
 }
 
-// Structs
+// Define the `DBConnection` struct
+pub struct DBConnection(pub Future<Output=dyn Pool<Postgres>>);
 
-pub struct DBConnection(pub usize);
-
+// Define the `DatabaseConnectionPool` struct as a Shaku component
 #[derive(Component)]
 #[shaku(interface = ConnectionPool)]
 pub struct DatabaseConnectionPool {
-    #[shaku(default = 42)]
     pub value: usize,
+    pub env: Arc<dyn Env>,
 }
 
-
-// Trait implementations
-
-
+// Implement the `Provider` trait for `DatabaseConnectionPool`
 impl<M: Module + HasComponent<dyn ConnectionPool>> Provider<M> for DBConnection {
     type Interface = DBConnection;
 
     fn provide(module: &M) -> Result<Box<DBConnection>, Box<dyn Error + 'static>> {
-        let pool: &dyn ConnectionPool = module.resolve_ref();
-        Ok(Box::new(pool.get()))
+        let database_url = format!(
+            "postgres://yacho:password@127.0.0.1:17342/public?schema=public"
+        );
+        println!("Connecting Database..., {:?}", database_url);
+        let pool = PgPoolOptions::new()
+            .max_connections(10)
+            .connect(&database_url);
+
+        Ok(Box::new(DBConnection(pool)))
     }
 }
 
+// Implement the `ConnectionPool` trait for `DatabaseConnectionPool`
 impl ConnectionPool for DatabaseConnectionPool {
-    fn get(&self) -> DBConnection {
-        DBConnection(self.value)
-    }
+    // fn initialize(&self) -> Pool<Postgres> {
+    //     self.provide().unwrap().0
+    // }
 }

@@ -1,7 +1,9 @@
 use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
 use std::cell::RefCell;
 use std::error::Error;
+use std::sync::Arc;
 
+use crate::env::Env;
 use crate::health::repository::Repository;
 
 // Traits
@@ -13,7 +15,7 @@ pub trait Service: Send + Sync {
 #[shaku(interface = Service)]
 pub struct ServiceImpl {
     #[shaku(provide)]
-    repo: Box<dyn Repository>
+    repo: Box<dyn Repository>,
 }
 
 impl Service for ServiceImpl {
