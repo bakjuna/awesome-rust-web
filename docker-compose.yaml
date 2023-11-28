@@ -5,19 +5,19 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
-      POSTGRES_USER: yacho
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: public
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "17342:5432"
-#  server:
-#    container_name: server
-#    image: rust-backend
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    restart: always
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - 'database'
+  server:
+    container_name: server
+    image: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8090:8080"
+    depends_on:
+      - 'database'
