@@ -1,25 +1,22 @@
-use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
-use std::cell::RefCell;
-use std::error::Error;
-use std::sync::Arc;
+use axum::async_trait;
+use shaku::Provider;
 
-use crate::env::Env;
-use crate::health::repository::Repository;
+use crate::health::repository::HealthRepository;
 
-// Traits
-
-pub trait Service: Send + Sync {
-    fn get_double(&self) -> usize;
+#[async_trait]
+pub trait HealthService: Send + Sync {
+    async fn get_double(&self) -> usize;
 }
+
 #[derive(Provider)]
-#[shaku(interface = Service)]
-pub struct ServiceImpl {
+#[shaku(interface = HealthService)]
+pub struct HealthServiceImpl {
     #[shaku(provide)]
-    repo: Box<dyn Repository>,
+    repo: Box<dyn HealthRepository>,
 }
-
-impl Service for ServiceImpl {
-    fn get_double(&self) -> usize {
-        self.repo.get() * 2
+#[async_trait]
+impl HealthService for HealthServiceImpl {
+    async fn get_double(&self) -> usize {
+        self.repo.get().await.test * 2
     }
 }

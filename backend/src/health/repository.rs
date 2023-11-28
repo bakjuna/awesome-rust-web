@@ -1,22 +1,24 @@
-use shaku::{module, Component, HasComponent, HasProvider, Interface, Module, Provider};
-use std::cell::RefCell;
-use std::error::Error;
-use crate::DBConnection;
+use crate::database::DBConnection;
+use crate::health::model::Test;
+use axum::async_trait;
+use shaku::Provider;
 
-// Traits
-
-pub trait Repository: Send + Sync {
-    fn get(&self) -> usize;
+#[async_trait]
+pub trait HealthRepository: Send + Sync {
+    async fn get(&self) -> Test;
 }
+
 #[derive(Provider)]
-#[shaku(interface = Repository)]
-pub struct RepositoryImpl {
+#[shaku(interface = HealthRepository)]
+pub struct HealthRepositoryImpl {
     #[shaku(provide)]
-    db: Box<DBConnection>
+    db: Box<DBConnection>,
 }
 
-impl Repository for RepositoryImpl {
-    fn get(&self) -> usize {
-        (*self.db).0
+#[async_trait]
+impl HealthRepository for HealthRepositoryImpl {
+    async fn get(&self) -> Test {
+        let _p = (self.db.0).lock().await;
+        Test { test: 1 }
     }
 }

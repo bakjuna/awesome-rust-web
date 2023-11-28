@@ -3,9 +3,9 @@ use std::{
     net::{IpAddr, Ipv4Addr},
 };
 
-use shaku::{Component, Interface, Module, HasComponent};
+use shaku::{Component, Interface, Module};
 
-use crate::ConnectionPool;
+// use crate::ConnectionPool;
 
 pub trait Env: Interface {
     fn default(&self) -> EnvImpl;
@@ -31,8 +31,8 @@ impl<M: Module> Component<M> for EnvImpl {
     type Parameters = ();
 
     fn build(
-        context: &mut shaku::ModuleBuildContext<M>,
-        params: Self::Parameters,
+        _: &mut shaku::ModuleBuildContext<M>,
+        _: Self::Parameters,
     ) -> Box<Self::Interface> {
         Box::new(Self {
             postgres: Postgres {
