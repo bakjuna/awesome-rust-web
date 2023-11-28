@@ -12,7 +12,7 @@ services:
       - "17342:5432"
 #  server:
 #    container_name: server
-#    image: lottery-number-maker
+#    image: rust-backend
 #    build:
 #      context: .
 #      dockerfile: Dockerfile

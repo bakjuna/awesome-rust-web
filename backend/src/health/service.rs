@@ -1,6 +1,5 @@
 use axum::async_trait;
 use shaku::Provider;
-
 use crate::health::repository::HealthRepository;
 
 #[async_trait]
@@ -14,6 +13,7 @@ pub struct HealthServiceImpl {
     #[shaku(provide)]
     repo: Box<dyn HealthRepository>,
 }
+
 #[async_trait]
 impl HealthService for HealthServiceImpl {
     async fn get_double(&self) -> usize {

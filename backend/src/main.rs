@@ -18,10 +18,13 @@ mod health;
 mod logs;
 mod middlewares;
 mod env;
+mod cron;
+
 #[tokio::main]
 async fn main() -> BootResult {
     let module = Arc::new(AppModule::builder().build());
     let state = AppState { module };
+    handle_cronjob().await;
     let env: &dyn Env = state.module.resolve_ref();
     let ip_addr: IpAddr = env.default().server.address;
     let port: u16 = env.default().server.port;
@@ -38,4 +41,11 @@ async fn main() -> BootResult {
         Ok(app) => Ok(app),
         Err(_err) => Err(BootError::Api),
     }
+}
+
+async fn handle_cronjob() {
+    println!("Creating Cronjobs...");
+    let cron_jobs = cron::creator::create_cron_jobs().await.unwrap();
+    println!("Creating Cronjobs Completed");
+    cron_jobs.start().await.unwrap();
 }
