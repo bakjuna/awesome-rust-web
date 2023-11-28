@@ -23,3 +23,15 @@ make build-prod
 ```
 make lint
 ```
+
+## frontend
+### build
+```
+rustup target add wasm32-unknown-unknown
+cargo run --package frontend --bin frontend --target wasm32-unknown-unknown
+```
+### run local
+```
+brew install trunk
+trunk serve
+```

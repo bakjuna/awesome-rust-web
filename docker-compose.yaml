@@ -15,7 +15,7 @@ services:
     image: backend
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: backend/Dockerfile
     restart: always
     ports:
       - "8090:8080"
