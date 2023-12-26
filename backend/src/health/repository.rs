@@ -2,7 +2,6 @@ use crate::database::DBConnection;
 use crate::health::model::Test;
 use axum::async_trait;
 use shaku::Provider;
-use sqlx::postgres::PgPoolOptions;
 
 #[async_trait]
 pub trait HealthRepository: Send + Sync {

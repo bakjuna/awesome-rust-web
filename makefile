@@ -3,7 +3,11 @@ run-backend:
 	cargo run --bin backend
 
 run-frontend:
-	cargo run --bin frontend
+	trunk --config frontend/Trunk.toml serve
+build-backend:
+	cargo build --bin backend
+build-frontend:
+	cargo build --bin frontend
 
 watch:
 	cargo watch -q -c -w src/ -x run

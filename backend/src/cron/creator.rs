@@ -4,10 +4,9 @@ use shaku::HasComponent;
 use tokio_cron_scheduler::JobScheduler;
 
 use crate::app_state::AppState;
-use crate::database::{DBConnection, DatabaseConnectionPool, ConnectionPool};
-use crate::errors::BootError;
 use crate::cron::handler::CronJob;
-
+use crate::database::ConnectionPool;
+use crate::errors::BootError;
 
 pub async fn create_cron_jobs(app_state: &AppState) -> Result<JobScheduler, BootError> {
     let sched = JobScheduler::new().await;
@@ -19,10 +18,8 @@ pub async fn create_cron_jobs(app_state: &AppState) -> Result<JobScheduler, Boot
     let db = p.initialize();
     let pool = db.0.lock().await.to_owned();
 
-    let cron_job = Arc::new(CronJob {} );
-    let res = sched
-        .add(cron_job.job(pool).unwrap())
-        .await;
+    let cron_job = Arc::new(CronJob {});
+    let res = sched.add(cron_job.job(pool).unwrap()).await;
     if res.is_err() {
         return Err(BootError::CronJobRun);
     }
