@@ -10,14 +10,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "17342:5432"
-  server:
-    container_name: server
-    image: backend
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    restart: always
-    ports:
-      - "8090:8080"
-    depends_on:
-      - 'database'
+  # server:
+  #   container_name: server
+  #   image: backend
+  #   build:
+  #     context: .
+  #     dockerfile: backend/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "8090:8080"
+  #   depends_on:
+  #     - 'database'

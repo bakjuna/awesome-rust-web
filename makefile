@@ -1,9 +1,9 @@
 .PHONY: help
 run-backend:
-	cargo run --path backend
+	cargo run --bin backend
 
 run-frontend:
-	cargo run --path frontend
+	cargo run --bin frontend
 
 watch:
 	cargo watch -q -c -w src/ -x run
@@ -15,7 +15,7 @@ lint:
 	cargo clippy --fix --allow-dirty --allow-staged
 
 dcu:
-	docker-compose up -d
+	docker-compose --env-file ./backend/.env up -d
 
 dcs:
 	docker-compose stop

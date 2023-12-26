@@ -24,7 +24,8 @@ mod cron;
 async fn main() -> BootResult {
     let module = Arc::new(AppModule::builder().build());
     let state = AppState { module };
-    handle_cronjob().await;
+    // migrate(&state.module).await;
+    handle_cronjob(&state).await;
     let env: &dyn Env = state.module.resolve_ref();
     let ip_addr: IpAddr = env.default().server.address;
     let port: u16 = env.default().server.port;
@@ -43,9 +44,9 @@ async fn main() -> BootResult {
     }
 }
 
-async fn handle_cronjob() {
+async fn handle_cronjob(app_state: &AppState) {
     println!("Creating Cronjobs...");
-    let cron_jobs = cron::creator::create_cron_jobs().await.unwrap();
+    let cron_jobs = cron::creator::create_cron_jobs(app_state).await.unwrap();
     println!("Creating Cronjobs Completed");
     cron_jobs.start().await.unwrap();
 }

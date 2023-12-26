@@ -7,15 +7,16 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 
 pub trait ConnectionPool: Interface {
-    fn get(&self) -> DBConnection;
+    fn initialize(&self) -> DBConnection;
 }
 
 #[derive(Component)]
 #[shaku(interface = ConnectionPool)]
-pub struct DatabaseConnectionPool {}
+pub struct DatabaseConnectionPool {
+}
 
 impl ConnectionPool for DatabaseConnectionPool {
-    fn get(&self) -> DBConnection {
+    fn initialize(&self) -> DBConnection {
         let database_url =
             format!("postgres://yacho:password@127.0.0.1:17342/public?schema=public");
         println!("Connecting Database..., {:?}", database_url);
@@ -36,7 +37,7 @@ impl<M: Module + HasComponent<dyn ConnectionPool>> Provider<M> for DBConnection 
     type Interface = DBConnection;
 
     fn provide(module: &M) -> Result<Box<DBConnection>, Box<dyn Error>> {
-        let pool = module.resolve_ref().get();
+        let pool = module.resolve_ref().initialize();
         Ok(Box::new(pool))
     }
 }
