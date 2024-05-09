@@ -21,6 +21,7 @@ tokio-cron-scheduler = "0.9.0"
 http = { version = "0.2.11", features = [] }
 hyper = "0.14.27"
 tower = "0.4.13"
+dotenvy = "0.15.7"
 
 [dev-dependencies]
 mockall = "0.11.4"

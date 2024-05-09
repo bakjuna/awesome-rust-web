@@ -22,13 +22,14 @@ mod cron;
 
 #[tokio::main]
 async fn main() -> BootResult {
+
     let module = Arc::new(AppModule::builder().build());
     let state = AppState { module };
     // migrate(&state.module).await;
     handle_cronjob(&state).await;
     let env: &dyn Env = state.module.resolve_ref();
-    let ip_addr: IpAddr = env.default().server.address;
-    let port: u16 = env.default().server.port;
+    let ip_addr: IpAddr = env.get().server.address;
+    let port: u16 = env.get().server.port;
     let app = Router::new()
         .nest("/healthz", router_health(state))
         .layer(middleware::map_response(

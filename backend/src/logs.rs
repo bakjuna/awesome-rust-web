@@ -41,7 +41,7 @@ pub async fn log_request(
 
     println!("   ->> log_request: \n{}", json!(log_line));
 
-    // TODO - Send to cloud-watch.
+    // TODO - Send to cloudwatch.
 }
 
 #[skip_serializing_none]

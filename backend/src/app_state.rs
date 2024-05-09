@@ -2,16 +2,13 @@ use axum::extract::FromRef;
 use std::sync::Arc;
 
 use crate::{
-    database::{DBConnection, DatabaseConnectionPool},
-    health::repository::HealthRepositoryImpl,
-    health::service::HealthServiceImpl,
-    env::EnvImpl,
+    database::{PoolProvider, DatabaseConnectionPool}, env::{ EnvComponent, EnvProvider}, health::{repository::HealthRepositoryImpl, service::HealthServiceImpl}
 };
 use shaku::module;
 module! {
     pub AppModule {
-        components = [DatabaseConnectionPool, EnvImpl],
-        providers = [DBConnection, HealthServiceImpl, HealthRepositoryImpl]
+        components = [DatabaseConnectionPool, EnvComponent],
+        providers = [EnvProvider, PoolProvider, HealthServiceImpl, HealthRepositoryImpl]
     }
 }
 #[derive(Clone)]
