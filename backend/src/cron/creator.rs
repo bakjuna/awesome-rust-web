@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::sync::Arc;
 
 use shaku::HasComponent;
@@ -15,9 +16,11 @@ pub async fn create_cron_jobs(app_state: &AppState) -> Result<JobScheduler, Boot
     }
     let sched = sched.unwrap();
     let p: &dyn ConnectionPool = app_state.module.resolve_ref();
-    let db = p.initialize();
-    let pool = db.0.lock().await.to_owned();
-
+    let db = p.get();
+    let pool = {
+        let read_guard = db.0.read().unwrap();
+        read_guard.clone()
+    };
     let cron_job = Arc::new(CronJob {});
     let res = sched.add(cron_job.job(pool).unwrap()).await;
     if res.is_err() {

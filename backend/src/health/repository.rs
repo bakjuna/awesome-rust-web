@@ -1,7 +1,11 @@
+use std::borrow::Borrow;
+use std::ops::Deref;
+
 use crate::database::DBConnection;
 use crate::health::model::Test;
 use axum::async_trait;
 use shaku::Provider;
+use sqlx::postgres::PgPoolOptions;
 
 #[async_trait]
 pub trait HealthRepository: Send + Sync {
@@ -18,7 +22,12 @@ pub struct HealthRepositoryImpl {
 #[async_trait]
 impl HealthRepository for HealthRepositoryImpl {
     async fn get(&self) -> Test {
-        let pool = self.db.0.lock().await.to_owned();
+        // let pool = (*self.db).0.read().unwrap();
+
+        let pool = {
+            let read_guard = self.db.0.read().unwrap();
+            read_guard.clone()
+        };
         let row: (i32,) = sqlx::query_as(
             r#"
                 SELECT 1234;

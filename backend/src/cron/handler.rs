@@ -1,3 +1,4 @@
+
 use sqlx::{Postgres, Pool};
 use tokio_cron_scheduler::{Job, JobSchedulerError};
 
@@ -5,9 +6,9 @@ use crate::errors::BootError;
 
 pub struct CronJob {}
 impl CronJob {
-    pub fn job(&self, db: Pool<Postgres>) -> Result<Job, BootError> {
+    pub fn job(&self, p: Pool<Postgres>) -> Result<Job, BootError> {
         let job = Job::new_async("* * * * * * *", move |_, mut __| {
-            let pool = db.clone();
+            let pool = p.clone();
             Box::pin(async move {
                 let row: (i32,) = sqlx::query_as(
                     r#"
