@@ -3,6 +3,7 @@ use httpc_test::Response;
 
 #[tokio::test]
 async fn health() -> Result<()> {
+    // TODO: should start server, mock if needed
     let hc = httpc_test::new_client("http://localhost:8080")?;
     let response: Response = hc.do_get("/healthz").await?;
     assert_eq!(response.status(), 200);
