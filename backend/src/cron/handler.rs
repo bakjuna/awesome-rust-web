@@ -1,4 +1,6 @@
 
+use std::{borrow::Borrow, sync::Arc};
+
 use sqlx::{Postgres, Pool};
 use tokio_cron_scheduler::{Job, JobSchedulerError};
 
@@ -6,15 +8,15 @@ use crate::errors::BootError;
 
 pub struct CronJob {}
 impl CronJob {
-    pub fn job(&self, pool: Pool<Postgres>) -> Result<Job, BootError> {
+    pub fn job(&self, pool: Arc<Pool<Postgres>>) -> Result<Job, BootError> {
         let job = Job::new_async("* * * * * * *", move |_, mut __| {
-            let pool_use = pool.clone();
+            let pool_use = Arc::clone(&pool);
             Box::pin(async move {
                 let row: (i32,) = sqlx::query_as(
                     r#"
                         SELECT 1234;
                     "#
-                ).fetch_one(&pool_use).await.unwrap();
+                ).fetch_one(pool_use.borrow()).await.unwrap();
                 let u = usize::try_from(row.0).unwrap();
                 println!("Hello! {:?}", u)
             })

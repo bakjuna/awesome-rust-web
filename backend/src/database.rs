@@ -4,11 +4,12 @@ use shaku::{Component, HasComponent, Interface, Module, Provider};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
 use std::error::Error;
+use std::sync::Arc;
 
 pub trait ConnectionPool: Interface {
     fn get(&self) -> PoolProvider;
 }
-fn create_db_pool() -> Pool<Postgres> {
+fn create_db_pool() -> Arc<Pool<Postgres>> {
     let postgres_settings = create_env().postgres;
     let database_url = format!(
         "postgres://{user}:{password}@{host}:{port}/{database}?schema={schema}",
@@ -26,22 +27,22 @@ fn create_db_pool() -> Pool<Postgres> {
             .connect(&database_url),
     )
     .unwrap();
-    pool
+    Arc::new(pool)
 }
 #[derive(Component)]
 #[shaku(interface = ConnectionPool)]
 pub struct DatabaseConnectionPool {
     #[shaku(default=create_db_pool())]
-    db: Pool<Postgres>,
+    db: Arc<Pool<Postgres>>,
 }
 
 impl ConnectionPool for DatabaseConnectionPool {
     fn get(&self) -> PoolProvider {
-        PoolProvider(self.db.clone())
+        PoolProvider(Arc::clone(&self.db))
     }
 }
 
-pub struct PoolProvider(pub Pool<Postgres>);
+pub struct PoolProvider(pub Arc<Pool<Postgres>>);
 
 impl<M: Module + HasComponent<dyn ConnectionPool>> Provider<M> for PoolProvider {
     type Interface = PoolProvider;
