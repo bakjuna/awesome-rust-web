@@ -6,6 +6,7 @@ use crate::app_state::{AppState, AppModule};
 use crate::health::route::router_health;
 use auth::route::router_auth;
 use axum::{middleware, Router};
+use env::{create_env, EnvProvider};
 use shaku::HasComponent;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
@@ -29,17 +30,8 @@ async fn main() -> BootResult {
     let state = AppState { module };
     // migrate(&state.module).await;
     handle_cronjob(&state).await;
-    let env: &dyn Env = state.module.resolve_ref();
-    let ip_addr: IpAddr = env.get().server.address;
-    let port: u16 = env.get().server.port;
-    let app = Router::new()
-        .nest("/healthz", router_health())
-        .nest("/auth", router_auth())
-        .layer(middleware::map_response(
-            middlewares::middleware::main_response_mapper,
-        ))
-        .with_state(state);
-    let addr: SocketAddr = SocketAddr::new(ip_addr, port);
+    let app = create_routes(state);
+    let addr = create_addr();
     let server = axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await;
@@ -54,4 +46,21 @@ async fn handle_cronjob(app_state: &AppState) {
     let cron_jobs = cron::creator::create_cron_jobs(app_state).await.unwrap();
     println!("Creating Cronjobs Completed");
     cron_jobs.start().await.unwrap();
+}
+
+fn create_routes(app_state: AppState) -> Router {
+    Router::new()
+        .nest("/healthz", router_health())
+        .nest("/auth", router_auth())
+        .layer(middleware::map_response(
+            middlewares::middleware::main_response_mapper,
+        ))
+        .with_state(app_state)
+}
+
+fn create_addr() -> SocketAddr {
+    let env: EnvProvider = create_env();
+    let ip_addr: IpAddr = env.server.address;
+    let port: u16 = env.server.port;
+    SocketAddr::new(ip_addr, port)
 }
