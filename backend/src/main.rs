@@ -5,7 +5,7 @@ pub use self::{
 use crate::app_state::{AppState, AppModule};
 use crate::health::route::router_health;
 use auth::route::router_auth;
-use axum::{extract::State, middleware, Router};
+use axum::{middleware, Router};
 use shaku::HasComponent;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
@@ -33,11 +33,12 @@ async fn main() -> BootResult {
     let ip_addr: IpAddr = env.get().server.address;
     let port: u16 = env.get().server.port;
     let app = Router::new()
-        .nest("/healthz", router_health(state.clone()))
-        .nest("/auth", router_auth(state.clone()))
+        .nest("/healthz", router_health())
+        .nest("/auth", router_auth())
         .layer(middleware::map_response(
             middlewares::middleware::main_response_mapper,
-        ));
+        ))
+        .with_state(state);
     let addr: SocketAddr = SocketAddr::new(ip_addr, port);
     let server = axum::Server::bind(&addr)
         .serve(app.into_make_service())
