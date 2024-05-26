@@ -7,6 +7,7 @@ use auth::route::router_auth;
 use axum::{middleware, Router};
 use cron::component::CronJobInterface;
 use env::{create_env, EnvProvider};
+use shaku::HasComponent;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
 use crate::errors::BootResult;
@@ -31,9 +32,8 @@ async fn main() -> BootResult {
     // migrate(&state.module).await;
     let app = create_routes(state);
     let addr = create_addr();
-    let server = axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await;
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    let server = axum::serve(listener, app).await;
     match server {
         Ok(app) => Ok(app),
         Err(_err) => Err(BootError::Api),

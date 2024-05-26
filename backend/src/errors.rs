@@ -8,7 +8,7 @@ pub type BootResult = core::result::Result<(), BootError>;
 #[derive(Clone, Debug, Serialize, strum_macros::AsRefStr)]
 #[serde(tag = "type", content = "data")]
 #[allow(dead_code)]
-pub enum Error {
+pub enum CustomError {
     NotFoundError,
     NoFrequentNumber,
     AuthFailNoAuthTokenCookie,
