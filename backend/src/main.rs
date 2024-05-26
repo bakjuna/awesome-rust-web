@@ -1,16 +1,15 @@
-pub use self::{
-    errors::{BootError, Result},
-    logs::log_request,
-};
+pub use self::
+    errors::BootError
+;
 use crate::app_state::{AppState, AppModule};
 use crate::health::route::router_health;
 use auth::route::router_auth;
 use axum::{middleware, Router};
+use cron::component::CronJobInterface;
 use env::{create_env, EnvProvider};
 use shaku::HasComponent;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
-use crate::env::Env;
 use crate::errors::BootResult;
 
 mod app_state;
@@ -25,11 +24,12 @@ mod auth;
 
 #[tokio::main]
 async fn main() -> BootResult {
-
-    let module = Arc::new(AppModule::builder().build());
+    let raw_module = AppModule::builder().build();
+    let cr_start: Arc<dyn CronJobInterface> = raw_module.resolve();
+    cr_start.initialize();
+    let module = Arc::new(raw_module);
     let state = AppState { module };
     // migrate(&state.module).await;
-    handle_cronjob(&state).await;
     let app = create_routes(state);
     let addr = create_addr();
     let server = axum::Server::bind(&addr)
@@ -41,12 +41,6 @@ async fn main() -> BootResult {
     }
 }
 
-async fn handle_cronjob(app_state: &AppState) {
-    println!("Creating Cronjobs...");
-    let cron_jobs = cron::creator::create_cron_jobs(app_state).await.unwrap();
-    println!("Creating Cronjobs Completed");
-    cron_jobs.start().await.unwrap();
-}
 
 fn create_routes(app_state: AppState) -> Router {
     Router::new()

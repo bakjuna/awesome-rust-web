@@ -1,2 +1,1 @@
-mod handler;
-pub mod creator;
+pub mod component;

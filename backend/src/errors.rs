@@ -1,13 +1,13 @@
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
-
-pub type Result<T> = core::result::Result<T, Error>;
+use strum_macros::Display;
 
 pub type BootResult = core::result::Result<(), BootError>;
 
 #[derive(Clone, Debug, Serialize, strum_macros::AsRefStr)]
 #[serde(tag = "type", content = "data")]
+#[allow(dead_code)]
 pub enum Error {
     NotFoundError,
     NoFrequentNumber,
@@ -16,7 +16,7 @@ pub enum Error {
     AuthFailCtxNotInRequestExt,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
 pub enum BootError {
     CronJobInit,
     CronJobRun,
