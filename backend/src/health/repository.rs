@@ -1,7 +1,5 @@
-use std::borrow::Borrow;
 
 use crate::database::PoolProvider;
-use crate::env::EnvProvider;
 use crate::errors::CustomError;
 use crate::health::model::Test;
 use axum::async_trait;
@@ -17,8 +15,6 @@ pub trait HealthRepository: Send + Sync {
 pub struct HealthRepositoryImpl {
     #[shaku(provide)]
     db: Box<PoolProvider>,
-    #[shaku(provide)]
-    env: Box<EnvProvider>,
 }
 
 #[async_trait]
