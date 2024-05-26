@@ -1,5 +1,4 @@
 use crate::database::PoolProvider;
-use crate::env::EnvProvider;
 use crate::errors::CustomError;
 use axum::async_trait;
 use shaku::Provider;
@@ -16,8 +15,6 @@ pub trait AuthRepository: Send + Sync {
 pub struct AuthRepositoryImpl {
     #[shaku(provide)]
     db: Box<PoolProvider>,
-    #[shaku(provide)]
-    env: Box<EnvProvider>,
 }
 
 #[async_trait]

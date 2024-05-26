@@ -1,17 +1,15 @@
-use axum::Json;
+use axum::{response::Json as JsonResponse, extract::Json};
 use shaku_axum::InjectProvided;
 
-use crate::AppModule;
-// use crate::AppModule;
+use crate::{errors::CustomError, AppModule};
 
 use super::{model::Health, service::HealthService};
-// use super::service::HealthService;
 pub async fn handler_health(
     hello_world: InjectProvided<AppModule, dyn HealthService>,
-) -> Json<Health> {
-    let health: Health = Health {
-        is_ok: hello_world.get_double().await,
-    };
-    let res: Json<Health> = Json(health);
-    res
+) -> Result<Json<Health>, CustomError> {
+    match hello_world.get_double().await {
+        Ok(res) => Ok(JsonResponse(Health { is_ok: res })),
+        Err(e) => Err(e)
+    }
+
 }

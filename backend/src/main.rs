@@ -7,10 +7,8 @@ use crate::health::route::router_health;
 use auth::route::router_auth;
 use axum::{middleware, Router};
 use env::{create_env, EnvProvider};
-use shaku::HasComponent;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
-use crate::env::Env;
 use crate::errors::BootResult;
 
 mod app_state;
