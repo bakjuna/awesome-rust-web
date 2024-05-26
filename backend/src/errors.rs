@@ -2,17 +2,18 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
 
-pub type Result<T> = core::result::Result<T, Error>;
+pub type Result<T> = core::result::Result<T, CustomError>;
 
 pub type BootResult = core::result::Result<(), BootError>;
 
 #[derive(Clone, Debug, Serialize, strum_macros::AsRefStr)]
 #[serde(tag = "type", content = "data")]
-pub enum Error {
+pub enum CustomError {
     NotFoundError,
     NoFrequentNumber,
     AuthFailNoAuthTokenCookie,
     AuthFailTokenWrongFormat,
+    NumberParsingError,
     AuthFailCtxNotInRequestExt,
 }
 
@@ -24,16 +25,16 @@ pub enum BootError {
 }
 
 // region:    --- Error Boilerplate
-impl core::fmt::Display for Error {
+impl core::fmt::Display for CustomError {
     fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
         write!(fmt, "{self:?}")
     }
 }
 
-impl std::error::Error for Error {}
+impl std::error::Error for CustomError {}
 // endregion: --- Error Boilerplate
 
-impl IntoResponse for Error {
+impl IntoResponse for CustomError {
     fn into_response(self) -> Response {
         println!("->> {:<12} - {self:?}", "INTO_RES");
 
@@ -45,11 +46,12 @@ impl IntoResponse for Error {
     }
 }
 
-impl Error {
+impl CustomError {
     pub fn client_status_and_error(&self) -> (StatusCode, ClientError) {
         #[allow(unreachable_patterns)]
         match self {
             Self::NotFoundError => (StatusCode::NOT_FOUND, ClientError::NOT_FOUND),
+            Self::NumberParsingError =>(StatusCode::INTERNAL_SERVER_ERROR, ClientError::SERVICE_ERROR),
             Self::AuthFailNoAuthTokenCookie
             | Self::AuthFailTokenWrongFormat
             | Self::AuthFailCtxNotInRequestExt => (StatusCode::FORBIDDEN, ClientError::NO_AUTH),

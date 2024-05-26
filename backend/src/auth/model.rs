@@ -4,7 +4,3 @@ use serde::Serialize;
 pub struct Auth {
     pub is_ok: usize,
 }
-
-pub struct Test {
-    pub test: usize,
-}

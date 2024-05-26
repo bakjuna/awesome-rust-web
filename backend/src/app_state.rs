@@ -2,7 +2,10 @@ use axum::extract::FromRef;
 use std::sync::Arc;
 
 use crate::{
-    auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl}, database::{DatabaseConnectionPool, PoolProvider}, env::{ EnvComponent, EnvProvider}, health::{repository::HealthRepositoryImpl, service::HealthServiceImpl}
+    auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl},
+    database::{DatabaseConnectionPool, PoolProvider},
+    env::{EnvComponent, EnvProvider},
+    health::{repository::HealthRepositoryImpl, service::HealthServiceImpl},
 };
 use shaku::module;
 module! {

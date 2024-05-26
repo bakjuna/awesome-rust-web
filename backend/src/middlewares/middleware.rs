@@ -6,13 +6,13 @@ use axum::{
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{errors::Error, log_request};
+use crate::{errors::CustomError, log_request};
 
 pub async fn main_response_mapper(uri: Uri, req_method: Method, res: Response) -> Response {
     println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
     let uuid = Uuid::new_v4();
 
-    let service_error = res.extensions().get::<Error>();
+    let service_error = res.extensions().get::<CustomError>();
     let client_status_error = service_error.map(|se| se.client_status_and_error());
 
     let error_response = client_status_error
