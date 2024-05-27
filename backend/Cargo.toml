@@ -15,7 +15,7 @@ serde_json = "1"
 serde_with = "3"
 uuid = {version = "1", features = ["v4","fast-rng",]}
 strum_macros = "0.26.2"
-sqlx = {version = "0.7.2", features = ["runtime-async-std-native-tls", "postgres"]}
+sqlx = {version = "0.7.2", features = ["runtime-async-std-native-tls", "postgres", "migrate"]}
 futures = { version = "0.3.29" , features = ["executor"] }
 tokio-cron-scheduler = "0.10.2"
 http = { version = "1.1.0", features = [] }

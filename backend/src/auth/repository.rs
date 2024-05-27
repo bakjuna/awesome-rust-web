@@ -2,7 +2,6 @@ use crate::database::PoolProvider;
 use crate::errors::CustomError;
 use axum::async_trait;
 use shaku::Provider;
-
 use super::model::Auth;
 
 #[async_trait]

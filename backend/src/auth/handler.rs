@@ -1,11 +1,8 @@
-use axum::{response::Json as JsonResponse, extract::Json};
+use axum::{extract::Json, response::Json as JsonResponse};
 use shaku_axum::InjectProvided;
-
-use crate::{errors::CustomError, AppModule};
-// use crate::AppModule;
-
+use crate::{app_state::AppModule, errors::CustomError};
 use super::{model::Auth, service::AuthService};
-// use super::service::AuthService;
+
 pub async fn handler_auth(
     hello_world: InjectProvided<AppModule, dyn AuthService>,
     Json(payload): Json<usize>,

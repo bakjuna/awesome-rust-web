@@ -1,6 +1,5 @@
 use axum::extract::FromRef;
 use std::sync::Arc;
-
 use crate::{
     auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl},
     cron::component::CronJobComponent,
@@ -9,6 +8,7 @@ use crate::{
     health::{repository::HealthRepositoryImpl, service::HealthServiceImpl},
 };
 use shaku::module;
+
 module! {
     pub AppModule {
         components = [CronJobComponent, DatabaseConnectionPool, EnvComponent],

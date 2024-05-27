@@ -1,4 +1,4 @@
-use crate::{database::ConnectionPool, env::Env, BootError};
+use crate::{database::ConnectionPool, env::Env, errors::BootError};
 use shaku::{Component, Interface};
 use std::{ops::Deref, sync::Arc};
 use tokio_cron_scheduler::{Job, JobScheduler, JobSchedulerError};

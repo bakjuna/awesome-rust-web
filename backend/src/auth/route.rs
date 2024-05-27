@@ -1,5 +1,4 @@
 use axum::{routing::get, Router};
-
 use crate::auth::handler::handler_auth;
 use crate::AppState;
 

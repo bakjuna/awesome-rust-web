@@ -27,6 +27,8 @@ fn create_db_pool() -> Arc<Pool<Postgres>> {
             .connect(&database_url),
     )
     .unwrap();
+    block_on(sqlx::migrate!("./src/migrations")
+        .run(&pool)).unwrap();
     Arc::new(pool)
 }
 #[derive(Component)]

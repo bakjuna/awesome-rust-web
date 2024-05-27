@@ -1,7 +1,6 @@
 use axum::{response::Json as JsonResponse, extract::Json};
 use shaku_axum::InjectProvided;
-
-use crate::{errors::CustomError, AppModule};
+use crate::{errors::CustomError, app_state::AppModule};
 
 use super::{model::Health, service::HealthService};
 pub async fn handler_health(

@@ -1,7 +1,6 @@
 use std::{
     env, error::Error, net::{IpAddr, Ipv4Addr}
 };
-
 use dotenvy::from_path;
 use shaku::{Component, HasComponent, Interface, Module, Provider};
 

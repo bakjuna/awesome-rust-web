@@ -1,5 +1,4 @@
 use axum::{routing::get, Router};
-
 use crate::health::handler::handler_health;
 use crate::AppState;
 

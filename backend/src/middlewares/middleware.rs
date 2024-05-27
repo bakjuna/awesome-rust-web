@@ -5,7 +5,6 @@ use axum::{
 };
 use serde_json::json;
 use uuid::Uuid;
-
 use crate::{errors::CustomError, logs::log_request};
 
 pub async fn main_response_mapper(uri: Uri, req_method: Method, res: Response) -> Response {
