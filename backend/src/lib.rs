@@ -1,3 +1,4 @@
+pub use crate::app_state::*;
 use app_state::{AppModule, AppState};
 use auth::route::router_auth;
 use axum::{middleware, Router};
@@ -6,22 +7,22 @@ use env::{create_env, EnvProvider};
 use health::route::router_health;
 use shaku::HasComponent;
 use std::{
+    io::Error,
     net::{IpAddr, SocketAddr},
     sync::Arc,
-		io::Error
 };
 
-mod app_state;
-mod auth;
-mod cron;
-mod database;
-mod env;
+pub mod app_state;
+pub mod auth;
+pub mod cron;
+pub mod database;
+pub mod env;
 pub mod errors;
-mod health;
-mod logs;
-mod middlewares;
+pub mod health;
+pub mod logs;
+pub mod middlewares;
 
-fn create_routes(app_state: AppState) -> Router {
+pub fn create_routes(app_state: AppState) -> Router {
     Router::new()
         .nest("/healthz", router_health())
         .nest("/auth", router_auth())
@@ -42,11 +43,14 @@ fn run_cronjob(module: &AppModule) {
     let cr_start: Arc<dyn CronJobInterface> = module.resolve();
     cr_start.initialize();
 }
-fn construct_router() -> Router {
-    let raw_module = AppModule::builder().build();
+pub fn construct_router() -> Router {
+    let raw_module = Arc::new(AppModule::builder().build());
     run_cronjob(&raw_module);
-    let module = Arc::new(raw_module);
-    let state = AppState { module };
+    create_from_raw_module(raw_module)
+}
+
+pub fn create_from_raw_module(raw_module: Arc<AppModule>) -> Router {
+    let state = AppState { module: raw_module };
     create_routes(state)
 }
 

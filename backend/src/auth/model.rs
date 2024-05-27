@@ -1,6 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize)]
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Auth {
     pub is_ok: usize,
 }

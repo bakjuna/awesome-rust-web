@@ -1,5 +1,3 @@
-use axum::extract::FromRef;
-use std::sync::Arc;
 use crate::{
     auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl},
     cron::component::CronJobComponent,
@@ -7,7 +5,9 @@ use crate::{
     env::{EnvComponent, EnvProvider},
     health::{repository::HealthRepositoryImpl, service::HealthServiceImpl},
 };
+use axum::extract::FromRef;
 use shaku::module;
+use std::sync::Arc;
 
 module! {
     pub AppModule {

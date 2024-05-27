@@ -334,6 +334,7 @@ dependencies = [
  "dotenvy",
  "futures",
  "http 1.1.0",
+ "http-body-util",
  "httpc-test",
  "hyper 1.3.1",
  "mockall",
