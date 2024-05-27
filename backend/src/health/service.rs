@@ -1,10 +1,10 @@
 use axum::async_trait;
 use shaku::Provider;
-use crate::health::repository::HealthRepository;
+use crate::{errors::CustomError, health::repository::HealthRepository};
 
 #[async_trait]
 pub trait HealthService: Send + Sync {
-    async fn get_double(&self) -> usize;
+    async fn get_double(&self) -> Result<usize, CustomError>;
 }
 
 #[derive(Provider)]
@@ -16,7 +16,10 @@ pub struct HealthServiceImpl {
 
 #[async_trait]
 impl HealthService for HealthServiceImpl {
-    async fn get_double(&self) -> usize {
-        self.repo.get().await.test * 2
+    async fn get_double(&self) -> Result<usize, CustomError> {
+        match self.repo.get().await {
+            Ok(res) => Ok(res.test * 2),
+            Err(e) => Err(e),
+        }
     }
 }

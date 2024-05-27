@@ -1,10 +1,10 @@
 use axum::async_trait;
 use shaku::Provider;
-use crate::auth::repository::AuthRepository;
+use crate::{auth::repository::AuthRepository, errors::CustomError};
 
 #[async_trait]
 pub trait AuthService: Send + Sync {
-    async fn get_double(&self) -> usize;
+    async fn get_double(&self, input_number: usize) -> Result<usize, CustomError>;
 }
 
 #[derive(Provider)]
@@ -16,7 +16,10 @@ pub struct AuthServiceImpl {
 
 #[async_trait]
 impl AuthService for AuthServiceImpl {
-    async fn get_double(&self) -> usize {
-        self.repo.get().await.test * 2
+    async fn get_double(&self, input_number: usize) -> Result<usize, CustomError> {
+        match self.repo.get().await {
+            Ok(n) => Ok(n.is_ok * input_number),
+            Err(e) => Err(e)
+        }
     }
 }
