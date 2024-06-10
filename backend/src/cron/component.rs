@@ -59,8 +59,8 @@ impl CronJobInterface for CronJobComponent {
                 .fetch_one(pool.deref())
                 .await
                 .unwrap();
-                println!("1: db testing {:?}", row.0);
-                println!("1: env testing {:?}", env.server.address);
+                // println!("1: db testing {:?}", row.0);
+                // println!("1: env testing {:?}", env.server.address);
             })
         })
     }
@@ -77,8 +77,8 @@ impl CronJobInterface for CronJobComponent {
                 .fetch_one(pool.deref())
                 .await
                 .unwrap();
-                println!("Hello cronjob 2! {:?}", row.0);
-                println!("1: env testing {:?}", env.server.address);
+                // println!("Hello cronjob 2! {:?}", row.0);
+                // println!("1: env testing {:?}", env.server.address);
             })
         })
     }

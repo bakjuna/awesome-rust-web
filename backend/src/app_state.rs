@@ -3,7 +3,7 @@ use crate::{
     cron::component::CronJobComponent,
     database::{DatabaseConnectionPool, PoolProvider},
     env::{EnvComponent, EnvProvider},
-    health::{repository::HealthRepositoryImpl, service::HealthServiceImpl},
+    health::{repository::HealthRepositoryImpl, service::HealthServiceImpl}, kafka::{adaptor::KafkaAdaptorImpl, component::{KafkaComponent, KafkaProducerProvider}},
 };
 use axum::extract::FromRef;
 use shaku::module;
@@ -11,8 +11,8 @@ use std::sync::Arc;
 
 module! {
     pub AppModule {
-        components = [CronJobComponent, DatabaseConnectionPool, EnvComponent],
-        providers = [EnvProvider,PoolProvider,HealthServiceImpl, HealthRepositoryImpl,AuthServiceImpl,AuthRepositoryImpl,]
+        components = [CronJobComponent, KafkaComponent, DatabaseConnectionPool, EnvComponent],
+        providers = [EnvProvider,PoolProvider,HealthServiceImpl, HealthRepositoryImpl,AuthServiceImpl,AuthRepositoryImpl, KafkaProducerProvider, KafkaAdaptorImpl]
     }
 }
 #[derive(Clone)]

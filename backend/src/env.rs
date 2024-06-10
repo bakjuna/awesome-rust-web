@@ -10,6 +10,12 @@ use shaku::{Component, HasComponent, Interface, Module, Provider};
 pub struct EnvProvider {
     pub postgres: Postgres,
     pub server: Server,
+    pub kafka: Kafka,
+}
+
+#[derive(Debug, Clone)]
+pub struct Kafka {
+    pub server: String,
 }
 
 #[derive(Debug, Clone)]
@@ -63,6 +69,10 @@ pub fn create_env() -> EnvProvider {
                 .parse::<u16>()
                 .unwrap_or(8080),
         },
+        kafka: Kafka {
+            server: env::var("KAFKA_BOOTSTRAP_SERVER")
+                .unwrap_or("localhost:29092".to_string())
+        }
     }
 }
 impl<M: Module + HasComponent<dyn Env>> Provider<M> for EnvProvider {

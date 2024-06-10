@@ -4,12 +4,15 @@ use auth::route::router_auth;
 use axum::{middleware, Router};
 use cron::component::CronJobInterface;
 use env::{create_env, EnvProvider};
+use futures::Future;
 use health::route::router_health;
+use kafka::component::KafkaInterface;
+use rdkafka::consumer::Consumer;
 use shaku::HasComponent;
 use std::{
     io::Error,
     net::{IpAddr, SocketAddr},
-    sync::Arc,
+    sync::Arc, thread,
 };
 
 pub mod app_state;
@@ -19,6 +22,7 @@ pub mod database;
 pub mod env;
 pub mod errors;
 pub mod health;
+pub mod kafka;
 pub mod logs;
 pub mod middlewares;
 
@@ -43,10 +47,16 @@ fn run_cronjob(module: &AppModule) {
     let cr_start: Arc<dyn CronJobInterface> = module.resolve();
     cr_start.initialize();
 }
-pub fn construct_router() -> Router {
-    let raw_module = Arc::new(AppModule::builder().build());
-    run_cronjob(&raw_module);
-    create_from_raw_module(raw_module)
+
+fn run_kafka_consumer(module: &AppModule) {
+    let kafka: Arc<dyn KafkaInterface> = module.resolve();
+    // Clone the Arc to move it into the thread
+    let kafka_clone = Arc::clone(&kafka);
+
+    // Spawn a new thread to run the Kafka consumer loop
+    thread::spawn(move || {
+        kafka_clone.initialize();
+    });
 }
 
 pub fn create_from_raw_module(raw_module: Arc<AppModule>) -> Router {
@@ -57,5 +67,8 @@ pub fn create_from_raw_module(raw_module: Arc<AppModule>) -> Router {
 pub async fn create_server() -> Result<(), Error> {
     let addr = create_addr();
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, construct_router()).await
+    let raw_module = Arc::new(AppModule::builder().build());
+    run_cronjob(&raw_module);
+    run_kafka_consumer(&raw_module);
+    axum::serve(listener, create_from_raw_module(raw_module)).await
 }
